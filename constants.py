@@ -19,3 +19,6 @@ DB_PORT = getenv("DB_PORT")
 DB_SECRET = getenv("DB_SECRET")
 DB_USERNAME = getenv("DB_USERNAME")
 DB_NAME = getenv("DB_NAME")
+
+# Settings
+SLEEP_DELAY = 10
