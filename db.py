@@ -3,12 +3,14 @@
 """
 from datetime import datetime
 
-from constants import DB_USERNAME, DB_HOST, DB_NAME, DB_PORT, DB_SECRET
+from constants import DB_USERNAME, DB_HOST, DB_NAME, DB_SECRET
 
-from sqlalchemy import URL
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import URL, MetaData
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import (Column, Integer, String, DateTime)
 from sqlalchemy.orm import declarative_base
+
+from loguru import logger
 
 
 connection_string = URL.create(
@@ -16,7 +18,6 @@ connection_string = URL.create(
   username=DB_USERNAME,
   password=DB_SECRET,
   host=DB_HOST,
-  port=DB_PORT,
   database=DB_NAME,
 )
 
@@ -41,4 +42,18 @@ class RegisteredUser(Base):
     registered_at = Column(DateTime, default=datetime.utcnow)
 
 
-Base.metadata.create_all(bind=engine)
+AsyncSessionLocal = async_sessionmaker(engine, autocommit=False, autoflush=False)
+
+
+async def meta_create():
+    """Создаёт таблицы в БД по метаданным"""
+    async with engine.begin() as conn:
+        metadata = MetaData()
+        await conn.run_sync(metadata.reflect)
+        table_names = metadata.tables.keys()
+        for table in reversed(Base.metadata.sorted_tables):
+            if table not in table_names:
+                logger.info(f"Таблица {table} уже существует.")
+            else:
+                await conn.run_sync(table.create)
+                logger.info(f"Создана таблица {table}.")
