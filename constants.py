@@ -22,3 +22,6 @@ DB_NAME = getenv("DB_NAME")
 
 # Settings
 SLEEP_DELAY = 10
+
+# Misc
+RANDOM_IMG_SERVICE = "https://picsum.photos/720/480"  # Случайные изображения
