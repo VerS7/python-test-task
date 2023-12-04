@@ -5,7 +5,7 @@ from datetime import datetime
 
 from constants import DB_USERNAME, DB_HOST, DB_NAME, DB_SECRET
 
-from sqlalchemy import URL, MetaData
+from sqlalchemy import URL, MetaData, select
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import (Column, Integer, String, DateTime)
 from sqlalchemy.orm import declarative_base
@@ -23,7 +23,6 @@ connection_string = URL.create(
 
 engine = create_async_engine(
     connection_string,
-    echo=True,
     future=True
 )
 
